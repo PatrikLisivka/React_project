@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 
 export default function UpdateEquipment() {
     const { id } = useParams();
+    const index = parseInt(id, 10);
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -23,21 +24,32 @@ export default function UpdateEquipment() {
             return;
         }
 
-        equipmentService.getEquipmentById(id)
-            .then((res) => {
-                const data = res.data;
-                setFormData({
-                    name: data.name,
-                    description: data.description,
-                    price: data.price.toString(),
-                });
+        fetch("/api/listofitems", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ token }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data && data[index]) {
+                    const item = data[index];
+                    setFormData({
+                        name: item.name,
+                        description: item.description,
+                        price: item.price.toString(),
+                    });
+                } else {
+                    setError("Vybavenie neexistuje.");
+                }
                 setLoading(false);
             })
             .catch(() => {
                 setError("Nepodarilo sa načítať dáta.");
                 setLoading(false);
             });
-    }, [id]);
+    }, [index]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -57,7 +69,7 @@ export default function UpdateEquipment() {
         }
 
         try {
-            const res = await fetch(`/api/items/${id}`, {
+            const res = await fetch(`/api/items/${index}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -74,7 +86,7 @@ export default function UpdateEquipment() {
 
             if (res.ok) {
                 setSuccess("Vybavenie bolo úspešne upravené.");
-                setTimeout(() => navigate("/equipment"), 1500); // presmeruj späť po 1.5s
+                setTimeout(() => navigate("/equipment"), 1500);
             } else {
                 const errData = await res.json();
                 setError(errData.message || "Chyba pri ukladaní.");

@@ -136,13 +136,13 @@ export default function Equipment() {
                             <td>
                                 <button
                                     className="btn btn-info btn-sm me-2"
-                                    onClick={() => navigate(`/update/${index}`)} // 👈 index ako ID
+                                    onClick={() => navigate(`/update/${index}`)}
                                 >
                                     Upraviť
                                 </button>
                                 <button
                                     className="btn btn-danger btn-sm"
-                                    onClick={() => deleteItem(index)} // 👈 index ako ID
+                                    onClick={() => deleteItem(index)}
                                 >
                                     Odstrániť
                                 </button>
